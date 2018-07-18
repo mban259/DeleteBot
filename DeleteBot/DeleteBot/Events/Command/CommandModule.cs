@@ -17,11 +17,12 @@ namespace DeleteBot.Events.Command
                 if (message != null)
                 {
                     await message.DeleteAsync();
-                    Debug.Log($"けしたよ:{channel.Id}:{messageId}:{message.ToString()}");
+                    await Program.NotificationChannel.SendMessageAsync($"けしたよ:{channel.Id}:{messageId}:{message.ToString()}");
+                    Debug.Log($"delete:{channel.Id}:{messageId}:{message.ToString()}");
                     return;
                 }
             }
-            Debug.Log("めっせーじないよ");
+            Debug.Log("message not found");
         }
 
         [Command(CommandString.Delete)]
@@ -30,12 +31,21 @@ namespace DeleteBot.Events.Command
             var message = await channel.GetMessageAsync(messageId);
             if (message == null)
             {
-                Debug.Log("めっせーじないよ");
+                Debug.Log("message not found");
                 return;
             }
 
             await message.DeleteAsync();
-            Debug.Log($"けしたよ:{channel.Id}:{messageId}:{message.ToString()}");
+            await Program.NotificationChannel.SendMessageAsync($"けしたよ:{channel.Id}:{messageId}:{message.ToString()}");
+            Debug.Log($"delete:{channel.Id}:{messageId}:{message.ToString()}");
+        }
+
+        [Command(CommandString.Ban)]
+        internal async Task Ban(IUser user)
+        {
+            await Context.Guild.AddBanAsync(user);
+            await Program.NotificationChannel.SendMessageAsync($"さよなら:{user.Mention}");
+            Debug.Log($"banned:{user.Username}:{user.Id}");
         }
     }
 }

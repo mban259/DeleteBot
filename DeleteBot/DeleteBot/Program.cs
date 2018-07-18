@@ -9,8 +9,8 @@ namespace DeleteBot
     class Program
     {
         private readonly DiscordSocketClient _client = new DiscordSocketClient();
-
         private readonly MessageMonitor _messageMonitor;
+        internal static SocketTextChannel NotificationChannel { private set; get; }
         static void Main(string[] args)
         {
             var program = new Program();
@@ -28,6 +28,12 @@ namespace DeleteBot
         {
             _client.MessageReceived += _messageMonitor.MessageRecieved;
             _client.Log += Log;
+            _client.Ready += Ready;
+        }
+
+        internal async Task Ready()
+        {
+            NotificationChannel = _client.GetChannel(EnvManager.NotificationChannelId) as SocketTextChannel;
         }
 
         internal async Task MainAsync()
